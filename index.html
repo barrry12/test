@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take a Picture</title>
+</head>
+<body>
+    <h1>Take a Picture with Your Front Camera</h1>
+    <video id="video" autoplay></video>
+    <button id="capture">Capture</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <a id="download" style="display:none;">Download Image</a>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const downloadLink = document.getElementById('download');
+
+        // Access the camera
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }) // 'user' for front camera
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                console.error("Error accessing the camera: ", err);
+            });
+
+        // Capture the image
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert the canvas image to a data URL
+            const imageDataUrl = canvas.toDataURL('image/png');
+
+            // Create a download link for the image
+            downloadLink.href = imageDataUrl;
+            downloadLink.download = 'captured_image.png';
+            downloadLink.style.display = 'block';
+            downloadLink.click();
+
+            alert("Image captured! Please send it to the bot.");
+        });
+    </script>
+</body>
+</html>
